@@ -1,93 +1,89 @@
 # utils/visualization.py
 
-import streamlit as st
 import pandas as pd
-import altair as alt
-import pydeck as pdk
+import plotly.express as px
 
-def create_triage_dashboard(df: pd.DataFrame | None = None):
-    """Basic placeholder for the triage dashboard."""
-    st.subheader("Triage Dashboard")
+
+def create_triage_dashboard(df: pd.DataFrame):
+    """
+    Build the three main figures for the Meghalaya Overview tab:
+    1) Triage colour mix
+    2) Cases by chief complaint
+    3) Basic vital signs distribution
+
+    Returns:
+        (fig_triage, fig_complaint, fig_vitals)
+    """
+    # If no data, return three placeholder figs
     if df is None or df.empty:
-        st.info("No triage data available.")
-        return
+        fig_empty = px.scatter(title="No data available")
+        return fig_empty, fig_empty, fig_empty
 
-    st.write("Showing basic triage summary")
-    st.dataframe(df.head())
-
-    # Example chart – adapt later
-    if "triage_level" in df.columns:
-        triage_counts = df["triage_level"].value_counts().reset_index()
-        triage_counts.columns = ["triage_level", "count"]
-
-        chart = (
-            alt.Chart(triage_counts)
-            .mark_bar()
-            .encode(x="triage_level", y="count")
+    # 1) Triage mix
+    if "triage_color" in df.columns:
+        triage_counts = (
+            df["triage_color"]
+            .value_counts()
+            .reset_index()
+            .rename(columns={"index": "triage_color", "triage_color": "count"})
         )
-        st.altair_chart(chart, use_container_width=True)
-
-
-def create_geographic_view(df: pd.DataFrame | None = None):
-    """Basic placeholder for geographic view."""
-    st.subheader("Geographic View")
-    if df is None or df.empty:
-        st.info("No location data available.")
-        return
-
-    # Expect columns named 'lat' and 'lon'
-    if not {"lat", "lon"}.issubset(df.columns):
-        st.warning("No 'lat' and 'lon' columns found in data.")
-        return
-
-    st.pydeck_chart(
-        pdk.Deck(
-            initial_view_state=pdk.ViewState(
-                latitude=df["lat"].mean(),
-                longitude=df["lon"].mean(),
-                zoom=7,
-                pitch=0,
-            ),
-            layers=[
-                pdk.Layer(
-                    "ScatterplotLayer",
-                    data=df,
-                    get_position="[lon, lat]",
-                    get_radius=1000,
-                    pickable=True,
-                )
-            ],
+        fig_triage = px.pie(
+            triage_counts,
+            names="triage_color",
+            values="count",
+            title="Triage Mix (RED / YELLOW / GREEN)",
         )
-    )
+    else:
+        fig_triage = px.scatter(title="Triage Mix – no triage_color column found")
+
+    # 2) Complaints mix
+    if "complaint" in df.columns:
+        complaint_counts = (
+            df["complaint"]
+            .value_counts()
+            .reset_index()
+            .rename(columns={"index": "complaint", "complaint": "count"})
+        )
+        fig_complaint = px.bar(
+            complaint_counts,
+            x="complaint",
+            y="count",
+            title="Cases by Chief Complaint",
+        )
+    else:
+        fig_complaint = px.scatter(title="Complaints – no complaint column found")
+
+    # 3) Vital signs distribution
+    vital_cols = [c for c in ["hr", "sbp", "rr", "spo2"] if c in df.columns]
+    if vital_cols:
+        vitals_melt = (
+            df[vital_cols]
+            .melt(var_name="vital_sign", value_name="value")
+            .dropna(subset=["value"])
+        )
+        fig_vitals = px.box(
+            vitals_melt,
+            x="vital_sign",
+            y="value",
+            title="Vital Signs Distribution (Synthetic Patients)",
+        )
+    else:
+        fig_vitals = px.scatter(title="Vitals – no hr/sbp/rr/spo2 columns found")
+
+    return fig_triage, fig_complaint, fig_vitals
 
 
-def create_trend_analysis(df: pd.DataFrame | None = None):
-    """Basic placeholder for trend analysis."""
-    st.subheader("Trend Analysis")
-    if df is None or df.empty:
-        st.info("No time-series data available.")
-        return
+def create_geographic_view(*args, **kwargs):
+    """
+    Placeholder for future geographic visualisation.
+    Implement when you actually call it from app.py.
+    """
+    return None
 
-    # Expect a datetime column like 'created_at' or 'timestamp'
-    time_col = None
-    for c in ["created_at", "timestamp", "time", "event_time"]:
-        if c in df.columns:
-            time_col = c
-            break
 
-    if time_col is None:
-        st.warning("No datetime column (e.g. 'created_at') found in data.")
-        return
-
-    tmp = df.copy()
-    tmp[time_col] = pd.to_datetime(tmp[time_col], errors="coerce")
-    tmp = tmp.dropna(subset=[time_col])
-
-    daily = tmp.groupby(tmp[time_col].dt.date).size().reset_index(name="count")
-
-    chart = (
-        alt.Chart(daily)
-        .mark_line(point=True)
-        .encode(x=time_col, y="count")
-    )
-    st.altair_chart(chart, use_container_width=True)
+def create_trend_analysis(*args, **kwargs):
+    """
+    Placeholder for future trend analytics charts.
+    Implement when you wire it into app.py.
+    """
+    return None
