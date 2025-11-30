@@ -1,0 +1,10 @@
+# data/meghalaya_hospitals.csv
+name,type,district,lat,lon,icu_beds,general_beds,specialties,contact,level
+Gauhati Medical College & Hospital,Public,Kamrup,26.1445,91.7362,50,800,"Emergency,ICU,Surgery,Medicine,Cardiology,Neuro","0361-2529503",Tertiary
+NEIGRIHMS,Public,East Khasi Hills,25.5788,91.8933,30,500,"Super Specialty,Cardiology,Neuro,Oncology","0364-2538010",Tertiary
+Civil Hospital Shillong,Public,East Khasi Hills,25.5745,91.8793,8,300,"Emergency,Medicine,Surgery,Ortho","0364-2220105",Secondary
+KJP Synod Hospital,Private,East Khasi Hills,25.5720,91.8815,6,150,"General Medicine,Surgery,Maternal","0364-2502111",Secondary
+Bethany Hospital,Private,East Khasi Hills,25.5760,91.8930,10,200,"Multi-specialty,ICU,Surgery","0364-2591111",Secondary
+Tura Civil Hospital,Public,West Garo Hills,25.5145,90.2201,4,200,"Emergency,Medicine,Surgery","03651-222247",Secondary
+Mawphlang CHC,Public,East Khasi Hills,25.4480,91.8510,0,50,"Primary Care,Emergency","0364-2570001",Primary
+Nongpoh CHC,Public,Ri-Bhoi,25.9023,91.8767,0,60,"Primary Care,Emergency","0364-2250001",Primary
