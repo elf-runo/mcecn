@@ -1,13 +1,14 @@
-streamlit
-pandas
-numpy
+streamlit          # no version pin
+pandas>=2.2
+numpy>=2.1
+scikit-learn>=1.6
 plotly
-scikit-learn
 folium
 streamlit-folium
 geopy
 faker
 requests
 joblib
+
 
 
